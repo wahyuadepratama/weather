@@ -73,8 +73,6 @@ Sample Response:
 
 ```bash
 Method: GET,
-Parameter Body:
- "token": string
 
 Sample Response:
 {
