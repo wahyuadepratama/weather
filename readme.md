@@ -42,7 +42,7 @@ Sample Response:
 /weather/update
 
 ```bash
-Method: GET,
+Method: PUT,
 Parameter Body:
  "token": string
 
