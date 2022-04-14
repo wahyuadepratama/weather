@@ -15,10 +15,6 @@ import (
 
 func ShowAllWeather(context *gin.Context) {
 
-	if IsTokenValid(context) != 1 {
-		return
-	}
-
 	type Response struct {
 		models.Weather
 		WeatherDetail []models.WeatherDetail `json:"weather"`
@@ -28,7 +24,7 @@ func ShowAllWeather(context *gin.Context) {
 	var weather models.Weather
 	weatherData := db.Raw("select * from weather order by created_at desc limit 1").Scan(&weather)
 	if weatherData.Error != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Load data failed",
 		})
@@ -39,7 +35,7 @@ func ShowAllWeather(context *gin.Context) {
 	var weatherDetail []models.WeatherDetail
 	weatherDetailData := db.Raw("select * from weather_detail where weather_id = ?", weather.ID).Scan(&weatherDetail)
 	if weatherDetailData.Error != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Load data failed",
 		})
@@ -125,7 +121,7 @@ func UpdateWeather(context *gin.Context) {
 	body, readErr := ioutil.ReadAll(res.Body)
 	if readErr != nil {
 		log.Fatal(readErr)
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": readErr,
 		})
@@ -136,7 +132,7 @@ func UpdateWeather(context *gin.Context) {
 	jsonErr := json.Unmarshal(body, &data)
 	if jsonErr != nil {
 		log.Fatal(jsonErr)
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": jsonErr,
 		})
@@ -148,7 +144,7 @@ func UpdateWeather(context *gin.Context) {
 		data.Lat, data.Lon, data.Timezone, data.Current.Pressure, data.Current.Humidity, data.Current.WindSpeed)
 
 	if errInserWeather.Error != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Insert data failed",
 		})
@@ -159,7 +155,7 @@ func UpdateWeather(context *gin.Context) {
 	var latestWeather models.Weather
 	weatherData := db.Raw("select * from weather order by created_at desc limit 1").Scan(&latestWeather)
 	if weatherData.Error != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Load data failed",
 		})
@@ -172,7 +168,7 @@ func UpdateWeather(context *gin.Context) {
 			detail.ID, latestWeather.ID, detail.Main, detail.Description)
 
 		if errInserWeatherDetail.Error != nil {
-			context.JSON(http.StatusBadRequest, gin.H{
+			context.JSON(http.StatusOK, gin.H{
 				"status":  "401",
 				"message": "Insert data failed",
 			})

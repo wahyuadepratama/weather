@@ -10,12 +10,13 @@ import (
 func Routes() {
 
 	route := gin.Default()
+	route.Use(CORSMiddleware())
 
 	route.POST("/user/login", controllers.UserLogin)
 	route.POST("/user/register", controllers.UserRegister)
 
 	route.GET("/weather/all", controllers.ShowAllWeather)
-	route.GET("/weather/update", controllers.UpdateWeather)
+	route.PUT("/weather/update", controllers.UpdateWeather)
 
 	// Run route whenever triggered
 	route.Run()

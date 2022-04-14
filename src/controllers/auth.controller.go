@@ -80,7 +80,7 @@ func IsTokenValid(context *gin.Context) int {
 
 	// Binding request body json to request body struct
 	if err := context.ShouldBindJSON(&request); err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Token required",
 		})
@@ -89,7 +89,7 @@ func IsTokenValid(context *gin.Context) int {
 
 	response, data := VerifyToken(request.Token)
 	if response != 1 {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": data,
 		})

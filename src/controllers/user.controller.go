@@ -23,7 +23,7 @@ func UserLogin(context *gin.Context) {
 
 	// Binding request body json to request body struct
 	if err := context.ShouldBindJSON(&dataLogin); err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
 			"status":  "401",
 		})
@@ -32,7 +32,7 @@ func UserLogin(context *gin.Context) {
 
 	// Validation input data
 	if dataLogin.Email == "" {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Login failed, email can't be empty",
 		})
@@ -40,7 +40,7 @@ func UserLogin(context *gin.Context) {
 	}
 
 	if dataLogin.Password == "" {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Login failed, password can't be empty",
 		})
@@ -51,7 +51,7 @@ func UserLogin(context *gin.Context) {
 	var user models.User
 	usersData := db.Raw("select * from users where email = ? limit 1", dataLogin.Email).Scan(&user)
 	if usersData.Error != nil || user.Email == "" {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Login failed, email didn't registered yet",
 		})
@@ -61,7 +61,7 @@ func UserLogin(context *gin.Context) {
 	// Check is password match or not
 	errPassCheck := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(dataLogin.Password))
 	if errPassCheck != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Login failed, wrong password",
 		})
@@ -97,7 +97,7 @@ func UserRegister(context *gin.Context) {
 
 	// Binding request body json to request body struct
 	if err := context.ShouldBindJSON(&dataRegis); err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"message": err.Error(),
 			"status":  "401",
 		})
@@ -106,7 +106,7 @@ func UserRegister(context *gin.Context) {
 
 	// Validation input data
 	if dataRegis.Email == "" {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Registration failed, email can't be empty",
 		})
@@ -114,7 +114,7 @@ func UserRegister(context *gin.Context) {
 	}
 
 	if dataRegis.Name == "" {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Registration failed, name can't be empty",
 		})
@@ -122,7 +122,7 @@ func UserRegister(context *gin.Context) {
 	}
 
 	if dataRegis.Password == "" {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Registration failed, password can't be empty",
 		})
@@ -131,7 +131,7 @@ func UserRegister(context *gin.Context) {
 
 	_, err := mail.ParseAddress(dataRegis.Email)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Registration failed, email format is not valid",
 		})
@@ -147,7 +147,7 @@ func UserRegister(context *gin.Context) {
 	errInsertUser := db.Exec("INSERT INTO users (id,email,name,password,created_at) VALUES (?,?,?,?,now())", ID, dataRegis.Email, dataRegis.Name, string(hashedPassword))
 
 	if errInsertUser.Error != nil {
-		context.JSON(http.StatusBadRequest, gin.H{
+		context.JSON(http.StatusOK, gin.H{
 			"status":  "401",
 			"message": "Registration failed",
 		})
